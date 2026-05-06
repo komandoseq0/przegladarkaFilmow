@@ -11,3 +11,7 @@ export default function Navbar() {
       </nav>
   );
 }
+
+function searchResults() {
+  <div></div>
+}

@@ -1,10 +1,15 @@
-import Link from "next/link";
+"use client";
+import BestRatedMovies from "../components/homeComponents/bestRatedMovies";
+import MostPopularMovies from "../components/homeComponents/mostPopularMovies";
+import LatestMovies from "../components/homeComponents/latestMovies";
 
 export default function Home() {
+
   return (
     <>
-      <h1>Hello World</h1>
+      <BestRatedMovies />
+      <MostPopularMovies />
+      <LatestMovies />
     </>
-
   );
 }
