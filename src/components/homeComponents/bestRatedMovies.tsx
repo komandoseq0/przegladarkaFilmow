@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { MovieTypes, TMDBMovie } from "../../types/movieData"
 import Link from "next/link";
+import "./movieCards.css";
 
 export default function BestRatedMovies() {
     const [bestRatedMovies, setBestRatedMovies] = useState<MovieTypes[]>([]); 
@@ -11,7 +12,7 @@ export default function BestRatedMovies() {
     async function getBestRatedMovies() {
       try {
         const res = await fetch(
-          "https://api.themoviedb.org/3/movie/top_rated?api_key=33f4be8d4411e3aecbc041d9a4dc486d&language=pl-PL&page=1",
+          "https://api.themoviedb.org/3/movie/top_rated?api_key=33f4be8d4411e3aecbc041d9a4dc486d&language=en-US&page=1",
         );
 
         if (!res.ok)
@@ -20,7 +21,6 @@ export default function BestRatedMovies() {
           );
 
         const data = await res.json();
-
         const topTenResults: TMDBMovie[] = data.results.slice(0, 10);
 
         const CleanMovies: MovieTypes[] = topTenResults.map((movie: TMDBMovie) => {
@@ -33,8 +33,6 @@ export default function BestRatedMovies() {
         })
 
         setBestRatedMovies(CleanMovies);
-
-        console.log(CleanMovies);
       } catch (err: unknown) {
         console.error(err);
       }
@@ -42,16 +40,31 @@ export default function BestRatedMovies() {
     getBestRatedMovies();
   }, []);
 
-  return <section className="movies">
-    {bestRatedMovies.map((movie: MovieTypes) => <Movie movie={movie} key={movie.id}/>)}
-  </section>;
+  return (
+    <section className="movie-section">
+      <h2 className="section-title">SYS.NAJLEPIEJ_OCENIANE</h2>
+      <div className="movie-grid">
+        {bestRatedMovies.map((movie: MovieTypes) => <Movie movie={movie} key={movie.id}/>)}
+      </div>
+    </section>
+  );
 }
 
 function Movie({ movie } : {movie: MovieTypes}) {
-    return <Link href={`/movie/${movie.id}`}>
-        <div className="movie">
-            <h2>{movie.title}</h2>
-            <img src={movie.poster ? movie.poster : ""} alt="Could not found movie poster" />
-        </div>
-    </Link>
+    return (
+      <Link href={`/movie/${movie.id}`}>
+          <div className="industrial-card">
+              <div className="card-image-wrapper">
+                {movie.poster ? (
+                  <img className="card-poster" src={movie.poster} alt={movie.title} />
+                ) : (
+                  <div className="no-poster">BŁĄD WIZJI</div>
+                )}
+              </div>
+              <div className="card-info">
+                <h3 className="card-title">{movie.title}</h3>
+              </div>
+          </div>
+      </Link>
+    );
 }

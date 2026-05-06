@@ -7,8 +7,8 @@ export default async function MovieDetails({
   const movieId = resolvedParams.id;
 
   return (
-    <div>
-      <h1>Details for Movie ID: {movieId}</h1>
+    <div className="industrial-container" style={{ padding: '2rem', backgroundColor: 'var(--surface-color)', border: '1px solid var(--border-color)' }}>
+      <h1 style={{ color: 'var(--accent-color)' }}>Details for Movie ID: {movieId}</h1>
       {/* Tutaj za chwilę dodasz pobieranie konkretnego filmu! */}
     </div>
   );

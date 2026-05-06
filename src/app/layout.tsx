@@ -11,11 +11,9 @@ export default function RootLayout({
     <html lang="pl">
       <body>
         <Navbar />
-
-        <main>
+        <main className="industrial-main">
           {children}
         </main>
-
         <Footer />
       </body>
     </html>
