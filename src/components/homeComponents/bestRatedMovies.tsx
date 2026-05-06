@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { MovieTypes, TMDBMovie } from "../../types/movieData"
 import Link from "next/link";
