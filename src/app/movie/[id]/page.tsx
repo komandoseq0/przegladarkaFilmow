@@ -138,11 +138,11 @@ export default function MovieDetails({
             <h2 className="block-title">PERSONEL_KLUCZOWY</h2>
             <div className="crew-info">
               <div className="crew-item">
-                <span className="label">REŻYSER:</span>
+                <span className="label">Reżyser: </span>
                 <span className="value">{movie?.director || ""}</span>
               </div>
               <div className="crew-item">
-                <span className="label">GATUNKI:</span>
+                <span className="label">Gatunki: </span>
                 <span className="value">
                   {movie?.genres
                     ? movie?.genres.map((genre: string) => `${genre} `)
@@ -155,13 +155,11 @@ export default function MovieDetails({
 
         <aside className="details-sidebar">
           <h2 className="block-title">OBSADA</h2>
-          <ul className="cast-list">
-            {movie?.topCast
-              ? movie?.topCast.map((castPerson: CastMember) => (
-                  <CastPerson castPerson={castPerson} key={castPerson.id} />
-                ))
-              : ""}
-          </ul>
+          <div className="cast-grid">
+            {movie?.topCast?.map((castPerson: CastMember) => (
+              <CastPerson castPerson={castPerson} key={castPerson.id} />
+            ))}
+          </div>
         </aside>
       </div>
     </div>
@@ -170,9 +168,18 @@ export default function MovieDetails({
 
 function CastPerson({ castPerson }: { castPerson: CastMember }) {
   return (
-    <li className="cast-item">
-      <span className="actor-name">{castPerson.character}</span>
-      <span className="character-name">{castPerson.name}</span>
-    </li>
+    <div className="cast-card">
+      <div className="cast-photo-wrapper">
+        {castPerson.photo ? (
+          <img src={castPerson.photo} alt={castPerson.name} />
+        ) : (
+          <div className="cast-photo-placeholder">BRAK_DANYCH</div>
+        )}
+      </div>
+      <div className="cast-info">
+        <span className="actor-name">{castPerson.name}</span>
+        <span className="character-name">{castPerson.character}</span>
+      </div>
+    </div>
   );
 }
