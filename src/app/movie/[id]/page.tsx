@@ -17,6 +17,8 @@ export default function MovieDetails({
   const movieId = resolvedParams.id;
 
   const [movie, setMovie] = useState<MovieDetailsApp>();
+  const [movieCheckedToWatch, setMovieCheckedToWatch] = useState<boolean>(false);
+  const [movieCheckedWatched, setMovieCheckedWatched] = useState<boolean>(false);
 
   const mapTMDBToApp = (tmdb: TMDBMovieDetails): MovieDetailsApp => {
     const director =
@@ -60,6 +62,35 @@ export default function MovieDetails({
     };
   };
 
+  function addToWatch() {
+    let toWatch: number[] = JSON.parse(localStorage.getItem("toWatch") || "[]");
+    if (movie == null) return
+    if (toWatch.includes(movie.id)) {
+      toWatch = toWatch.filter((movieId: number) => movieId !== movie.id);
+      setMovieCheckedToWatch(false);
+    }
+    else {
+      toWatch.push(movie.id);
+      setMovieCheckedToWatch(true);
+    }
+    console.log(toWatch);
+    localStorage.setItem("toWatch", JSON.stringify(toWatch));
+  }
+
+  function addWatched() {
+    let watched: number[] = JSON.parse(localStorage.getItem("watched") || "[]");
+    if (movie == null) return
+    if (watched.includes(movie.id)) {
+      watched = watched.filter((movieId: number) => movieId !== movie.id);
+      setMovieCheckedWatched(false);
+    }
+    else {
+      watched.push(movie.id);
+      setMovieCheckedWatched(true);
+    }
+    localStorage.setItem("watched", JSON.stringify(watched));
+  }
+
   useEffect(function () {
     if (!movieId) return;
 
@@ -83,6 +114,14 @@ export default function MovieDetails({
     }
     getLatestMovies();
   }, []);
+
+  useEffect(function() {
+      const toWatch: number[] = JSON.parse(localStorage.getItem("toWatch") || "[]");
+      if (movie != null && toWatch.includes(movie?.id)) setMovieCheckedToWatch(true);
+
+      const watched: number[] = JSON.parse(localStorage.getItem("watched") || "[]");
+      if (movie != null && watched.includes(movie?.id)) setMovieCheckedWatched(true);
+  }, [])
 
   return (
     <div className="movie-details-container">
@@ -114,11 +153,11 @@ export default function MovieDetails({
             <p className="tagline">{movie?.tagline || ""}</p>
 
             <div className="hero-actions">
-              <button className="btn-industrial primary">
-                <span className="icon">+</span> DO_OBEJRZENIA
+              <button className="btn-industrial primary" onClick={() => addToWatch()}>
+                <span className="icon">{movieCheckedToWatch ? "-" : "+"}</span> DO_OBEJRZENIA
               </button>
-              <button className="btn-industrial">
-                <span className="icon">✓</span> OBEJRZANO
+              <button className="btn-industrial" onClick={() => addWatched()}>
+                <span className="icon">{movieCheckedWatched ? "X" : "✓"}</span> OBEJRZANO
               </button>
             </div>
           </div>
@@ -135,7 +174,7 @@ export default function MovieDetails({
           </div>
 
           <div className="data-block">
-            <h2 className="block-title">PERSONEL_KLUCZOWY</h2>
+            <h2 className="block-title">Informacje</h2>
             <div className="crew-info">
               <div className="crew-item">
                 <span className="label">Reżyser: </span>
