@@ -1,0 +1,99 @@
+/* src/app/userLists.css */
+.list-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 80vh;
+}
+
+.list-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-link {
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+/* Sekcja przycisków na dole karty */
+.list-actions {
+  display: flex;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--surface-color);
+  z-index: 2; /* Zapobiega nachodzeniu efektów z Link */
+}
+
+.industrial-btn {
+  flex: 1;
+  background: transparent;
+  color: var(--text-primary);
+  border: none;
+  border-right: 1px solid var(--border-color);
+  padding: 0.75rem 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.industrial-btn:last-child {
+  border-right: none;
+}
+
+.industrial-btn:hover {
+  background-color: var(--accent-glow);
+  color: var(--accent-color);
+}
+
+.industrial-btn.danger:hover {
+  background-color: rgba(255, 50, 50, 0.15);
+  color: #ff4444;
+}
+
+.rating-display {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--accent-color);
+  border-right: 1px solid var(--border-color);
+  background-color: rgba(255, 107, 0, 0.05);
+}
+
+/* Stan, w którym lista jest pusta */
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  border: 1px dashed var(--border-highlight);
+  background-color: rgba(26, 26, 26, 0.5);
+  margin-top: 2rem;
+}
+
+.empty-state p {
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+}
+
+.empty-state p::before {
+  content: "> ";
+  color: var(--accent-color);
+}
+
+.empty-state p::after {
+  content: "_";
+  animation: blink 1s step-start infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}

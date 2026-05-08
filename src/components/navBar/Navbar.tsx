@@ -62,9 +62,20 @@ export default function Navbar() {
   return (
     <nav className="industrial-nav">
       <div className="nav-wrapper">
-        <Link href="/" className="nav-logo" onClick={resetAfterClick}>
-          <span className="logo-text">SYS.FILMY</span>
-        </Link>
+        <div className="nav-left">
+          <Link href="/" className="nav-logo" onClick={resetAfterClick}>
+            <span className="logo-text">SYS.FILMY</span>
+          </Link>
+
+          <div className="nav-links">
+            <Link href="/toWatchMovies" className="nav-link">
+              <span className="link-icon"></span> DO_OBEJRZENIA
+            </Link>
+            <Link href="/watchedMovies" className="nav-link">
+              <span className="link-icon"></span> OBEJRZANE
+            </Link>
+          </div>
+        </div>
 
         <div className="search-container">
           <input
@@ -72,7 +83,7 @@ export default function Navbar() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="> WYSZUKAJ_PLIKI_W_BAZIE..."
+            placeholder="> WYSZUKAJ_PLIKI..."
           />
 
           {query.length >= 3 && searchResults.length > 0 ? (
@@ -86,6 +97,7 @@ export default function Navbar() {
     </nav>
   );
 }
+
 
 function SearchResults({
   searchResults,
@@ -115,24 +127,21 @@ function SearchResult({
   resetAfterClick: () => void;
 }) {
   return (
-    <Link href={`/movie/${movie.id}`} onClick={resetAfterClick}>
-      <div className="search-result-item">
-        <div className="search-result-info">
-          <p className="search-result-title">{movie.title}</p>
-        </div>
-        {movie.poster ? (
-          <img
-            className="search-result-poster"
-            src={movie.poster}
-            alt={`Plakat ${movie.title}`}
-          />
-        ) : (
-          <div className="poster-placeholder">
-            BRAK
-            <br />
-            DANYCH
-          </div>
-        )}
+    <Link href={`/movie/${movie.id}`} onClick={resetAfterClick} className="search-result-item">
+      {movie.poster ? (
+        <img
+          className="search-result-poster"
+          src={movie.poster}
+          alt={`Plakat ${movie.title}`}
+        />
+      ) : (
+        <div className="poster-placeholder">BRAK_DANYCH</div>
+      )}
+      <div className="search-result-info">
+        <p className="search-result-title">{movie.title}</p>
+        <span className="search-result-date">
+          {movie.releaseDate ? movie.releaseDate.split("-")[0] : "DATA_NIEZNANA"}
+        </span>
       </div>
     </Link>
   );
