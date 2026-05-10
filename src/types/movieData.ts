@@ -5,6 +5,14 @@ export interface MovieTypes {
   releaseDate: string;
 }
 
+export interface MovieTypesWatched {
+  id: number;
+  title: string;
+  poster: string | null;
+  releaseDate: string;
+  rating: number;
+}
+
 export interface TMDBMovie {
   id: number;
   title: string;

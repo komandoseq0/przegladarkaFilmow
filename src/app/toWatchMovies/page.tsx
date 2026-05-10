@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { MovieTypes, TMDBMovie } from "../../types/movieData";
+import { MovieTypes, TMDBMovie, watchedMovie } from "../../types/movieData";
 import "../../components/homeComponents/movieCards.css";
 import "../userLists.css";
 
@@ -34,11 +34,11 @@ export default function ToWatchPage() {
   }
 
   function addToWatched(movieId: number) {
-    const toWatch: number[] = JSON.parse(
+    const toWatch: watchedMovie[] = JSON.parse(
       localStorage.getItem("watched") || "[]",
     );
 
-    toWatch.push(movieId);
+    toWatch.push({id: movieId, rating: 0});
 
     localStorage.setItem("watched", JSON.stringify(toWatch));
 

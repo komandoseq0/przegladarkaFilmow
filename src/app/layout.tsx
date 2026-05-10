@@ -14,7 +14,7 @@ export default function RootLayout({
       localStorage.setItem("toWatch", JSON.stringify([]));
     }
     if (!localStorage.getItem("watched")) {
-      localStorage.setItem("watched", JSON.stringify([]));
+      localStorage.setItem("watched", JSON.stringify({}));
     }
   }, []);
   return (

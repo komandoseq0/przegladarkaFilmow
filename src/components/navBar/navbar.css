@@ -1,9 +1,8 @@
-/* src/components/navBar/navbar.css */
 .industrial-nav {
   background-color: rgba(26, 26, 26, 0.95);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border-color);
-  padding: 1rem 0; /* Usunięto boczny padding, by kontener rządził */
+  padding: 1rem 0;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -11,7 +10,7 @@
 }
 
 .nav-wrapper {
-  max-width: 1200px; /* Bardziej do środka */
+  max-width: 1200px;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
@@ -73,11 +72,10 @@
   background-color: rgba(255, 255, 255, 0.05);
 }
 
-/* POWIĘKSZONY PASEK WYSZUKIWANIA */
 .search-container {
   position: relative;
   flex-grow: 1;
-  max-width: 550px; /* Zwiększono z 400px */
+  max-width: 550px;
   margin-left: 2rem;
 }
 
@@ -86,7 +84,7 @@
   background-color: rgba(15, 15, 15, 0.8);
   border: 1px solid var(--border-color);
   color: var(--text-primary);
-  padding: 0.8rem 1.2rem; /* Większy padding */
+  padding: 0.8rem 1.2rem;
   font-family: var(--font-mono);
   font-size: 0.9rem;
   outline: none;
@@ -100,7 +98,6 @@
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5), 0 0 15px var(--accent-glow);
 }
 
-/* ŁADNIEJSZE WYNIKI WYSZUKIWANIA */
 .search-results-wrapper {
   position: absolute;
   top: calc(100% + 10px);
@@ -137,7 +134,7 @@
 
 .search-result-item:hover {
   background-color: rgba(255, 107, 0, 0.1);
-  padding-left: 1rem; /* Efekt przesunięcia */
+  padding-left: 1rem;
 }
 
 .search-result-poster {
@@ -178,7 +175,6 @@
   opacity: 0.8;
 }
 
-/* Custom Scrollbar dla wyników */
 .search-results-wrapper::-webkit-scrollbar {
   width: 4px;
 }

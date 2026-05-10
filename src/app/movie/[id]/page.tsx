@@ -18,8 +18,10 @@ export default function MovieDetails({
   const movieId = resolvedParams.id;
 
   const [movie, setMovie] = useState<MovieDetailsApp>();
-  const [movieCheckedToWatch, setMovieCheckedToWatch] = useState<boolean>(false);
-  const [movieCheckedWatched, setMovieCheckedWatched] = useState<boolean>(false);
+  const [movieCheckedToWatch, setMovieCheckedToWatch] =
+    useState<boolean>(false);
+  const [movieCheckedWatched, setMovieCheckedWatched] =
+    useState<boolean>(false);
 
   const mapTMDBToApp = (tmdb: TMDBMovieDetails): MovieDetailsApp => {
     const director =
@@ -65,12 +67,11 @@ export default function MovieDetails({
 
   function addToWatch() {
     let toWatch: number[] = JSON.parse(localStorage.getItem("toWatch") || "[]");
-    if (movie == null) return
+    if (movie == null) return;
     if (toWatch.includes(movie.id)) {
       toWatch = toWatch.filter((movieId: number) => movieId !== movie.id);
       setMovieCheckedToWatch(false);
-    }
-    else {
+    } else {
       toWatch.push(movie.id);
       setMovieCheckedToWatch(true);
     }
@@ -79,16 +80,25 @@ export default function MovieDetails({
   }
 
   function addWatched() {
-    let watched: number[] = JSON.parse(localStorage.getItem("watched") || "[]");
-    if (movie == null) return
-    if (watched.includes(movie.id)) {
-      watched = watched.filter((movieId: number) => movieId !== movie.id);
+    let watched: watchedMovie[] = JSON.parse(
+      localStorage.getItem("watched") || "[]",
+    );
+    if (movie == null) return;
+
+    const isAlreadyWatched = watched.some(
+      (movieData: watchedMovie) => movie.id === movieData.id,
+    );
+
+    if (isAlreadyWatched) {
+      watched = watched.filter(
+        (movieData: watchedMovie) => movie.id !== movieData.id,
+      );
       setMovieCheckedWatched(false);
-    }
-    else {
-      watched.push(movie.id);
+    } else {
+      watched.push({ id: movie.id, rating: 0 });
       setMovieCheckedWatched(true);
     }
+
     localStorage.setItem("watched", JSON.stringify(watched));
   }
 
@@ -116,13 +126,31 @@ export default function MovieDetails({
     getLatestMovies();
   }, []);
 
-  useEffect(function() {
-      const toWatch: number[] = JSON.parse(localStorage.getItem("toWatch") || "[]");
-      if (movie != null && toWatch.includes(movie?.id)) setMovieCheckedToWatch(true);
+  useEffect(
+    function () {
+      if (!movie) return;
 
-      const watched: number[] = JSON.parse(localStorage.getItem("watched") || "[]");
-      if (movie != null && watched.includes(movie?.id)) setMovieCheckedWatched(true);
-  }, [])
+      const toWatch: number[] = JSON.parse(
+        localStorage.getItem("toWatch") || "[]",
+      );
+      if (toWatch.includes(movie.id)) {
+        setMovieCheckedToWatch(true);
+      }
+
+      const watched: watchedMovie[] = JSON.parse(
+        localStorage.getItem("watched") || "[]",
+      );
+
+      const isWatched = watched.some(
+        (movieData: watchedMovie) => movieData.id === movie.id,
+      );
+
+      if (isWatched) {
+        setMovieCheckedWatched(true);
+      }
+    },
+    [movie],
+  );
 
   return (
     <div className="movie-details-container">
@@ -154,11 +182,16 @@ export default function MovieDetails({
             <p className="tagline">{movie?.tagline || ""}</p>
 
             <div className="hero-actions">
-              <button className="btn-industrial primary" onClick={() => addToWatch()}>
-                <span className="icon">{movieCheckedToWatch ? "-" : "+"}</span> DO_OBEJRZENIA
+              <button
+                className="btn-industrial primary"
+                onClick={() => addToWatch()}
+              >
+                <span className="icon">{movieCheckedToWatch ? "-" : "+"}</span>{" "}
+                DO_OBEJRZENIA
               </button>
               <button className="btn-industrial" onClick={() => addWatched()}>
-                <span className="icon">{movieCheckedWatched ? "X" : "✓"}</span> OBEJRZANO
+                <span className="icon">{movieCheckedWatched ? "X" : "✓"}</span>{" "}
+                OBEJRZANO
               </button>
             </div>
           </div>

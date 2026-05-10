@@ -131,7 +131,6 @@
   font-weight: bold;
 }
 
-/* Grid layout */
 .details-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -163,14 +162,12 @@
   font-size: 1.1rem;
 }
 
-/* Kontener dla wszystkich kart aktorów */
 .cast-grid {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem; /* Odstęp między "aktami osobowymi" */
+  gap: 0.75rem;
 }
 
-/* Pojedyncza karta aktora */
 .cast-card {
   display: flex;
   align-items: center;
@@ -188,7 +185,6 @@
   transform: translateX(4px);
 }
 
-/* Kontener na zdjęcie */
 .cast-photo-wrapper {
   width: 45px;
   height: 45px;
@@ -196,7 +192,7 @@
   border: 1px solid var(--border-color);
   background-color: var(--bg-color);
   overflow: hidden;
-  filter: grayscale(100%) contrast(1.1); /* Styl starej kartoteki */
+  filter: grayscale(100%) contrast(1.1);
   transition: filter 0.3s ease;
 }
 
