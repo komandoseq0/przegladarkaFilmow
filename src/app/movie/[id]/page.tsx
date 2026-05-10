@@ -5,6 +5,7 @@ import {
   MovieDetailsApp,
   TMDBMovieDetails,
   CastMember,
+  watchedMovie,
 } from "../../../types/movieData";
 import "../movieDetails.css";
 

@@ -59,3 +59,8 @@ export interface CastMember {
   character: string;
   photo: string | null;
 }
+
+export interface watchedMovie {
+  id: number,
+  rating: number,
+}
