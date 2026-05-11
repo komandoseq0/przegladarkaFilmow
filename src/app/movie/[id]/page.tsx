@@ -124,7 +124,7 @@ export default function MovieDetails({
       }
     }
     getLatestMovies();
-  }, []);
+  }, [movieId]);
 
   useEffect(
     function () {
@@ -156,7 +156,7 @@ export default function MovieDetails({
     <div className="movie-details-container">
       <header className="movie-hero">
         <div className="hero-backdrop">
-          <img src={movie?.backdrop || ""} alt="" />
+          <img src={movie?.backdrop || "test"} alt="" />
           <div className="backdrop-overlay"></div>
         </div>
 
