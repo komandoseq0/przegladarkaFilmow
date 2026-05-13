@@ -1,5 +1,5 @@
 import Navbar from "../components/navBar/Navbar";
-import InitStorage from "../components/initStorage";
+import AuthProvider from "../components/AuthProvider";
 import "./global.css";
 
 export default function RootLayout({
@@ -10,9 +10,10 @@ export default function RootLayout({
   return (
     <html lang="pl">
       <body>
-        <InitStorage />
-        <Navbar />
-        <main className="industrial-main">{children}</main>
+        <AuthProvider>
+          <Navbar />
+          <main className="industrial-main">{children}</main>
+        </AuthProvider>
       </body>
     </html>
   );

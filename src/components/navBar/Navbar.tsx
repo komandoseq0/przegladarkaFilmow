@@ -2,11 +2,19 @@
 import Link from "next/link";
 import "./navbar.css";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { MovieTypes, TMDBMovie } from "../../types/movieData";
+import { useSession, signOut } from "next-auth/react";
 
 export default function Navbar() {
+  const { data: session } = useSession();
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const [searchResults, setSearchResults] = useState<MovieTypes[]>([]);
+  const randomInt = (min: number, max: number) =>
+    Math.floor(Math.random() * (max - min + 1)) + min;
+
+  const userNick = session?.user?.email ? session.user.email.split('@')[0].toUpperCase() : "GOŚĆ";
 
   function resetAfterClick(): void {
     setQuery("");
@@ -59,6 +67,21 @@ export default function Navbar() {
     [query],
   );
 
+  async function randomMovieHandler() {
+    const res = await fetch(
+      `https://api.themoviedb.org/3/discover/movie?api_key=33f4be8d4411e3aecbc041d9a4dc486d&language=pl-PL&page=${randomInt(1, 500)}&include_adult=false`,
+    );
+
+    if (!res.ok)
+      throw new Error("Something went wrong with fetching searched movies");
+
+    const data = await res.json();
+
+    const movie: MovieTypes = data.results[randomInt(1, 19)];
+
+    router.push(`/movie/${movie.id}`);
+  }
+
   return (
     <nav className="industrial-nav">
       <div className="nav-wrapper">
@@ -78,13 +101,23 @@ export default function Navbar() {
         </div>
 
         <div className="search-container">
-          <input
-            className="industrial-input"
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="> WYSZUKAJ_PLIKI..."
-          />
+          <div className="search-input-group">
+            <input
+              className="industrial-input"
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="> WYSZUKAJ_PLIKI..."
+            />
+            <button
+              className="random-btn"
+              onClick={() => {
+                randomMovieHandler();
+              }}
+            >
+              ZASKOCZ MNIE
+            </button>
+          </div>
 
           {query.length >= 3 && searchResults.length > 0 ? (
             <SearchResults
@@ -93,11 +126,27 @@ export default function Navbar() {
             />
           ) : null}
         </div>
+
+        <div className="auth-container">
+          {session ? (
+            <div className="user-profile">
+              <div className="user-info">
+                <span className="user-status-indicator"></span>
+              </div>
+              <button className="logout-btn login-btn" onClick={() => signOut()}>
+                [ WYLOGUJ ]
+              </button>
+            </div>
+          ) : (
+            <Link href="/login" className="login-btn" onClick={resetAfterClick}>
+              [ ZALOGUJ ]
+            </Link>
+          )}
+        </div>
       </div>
     </nav>
   );
 }
-
 
 function SearchResults({
   searchResults,
@@ -127,7 +176,11 @@ function SearchResult({
   resetAfterClick: () => void;
 }) {
   return (
-    <Link href={`/movie/${movie.id}`} onClick={resetAfterClick} className="search-result-item">
+    <Link
+      href={`/movie/${movie.id}`}
+      onClick={resetAfterClick}
+      className="search-result-item"
+    >
       {movie.poster ? (
         <img
           className="search-result-poster"
@@ -140,7 +193,9 @@ function SearchResult({
       <div className="search-result-info">
         <p className="search-result-title">{movie.title}</p>
         <span className="search-result-date">
-          {movie.releaseDate ? movie.releaseDate.split("-")[0] : "DATA_NIEZNANA"}
+          {movie.releaseDate
+            ? movie.releaseDate.split("-")[0]
+            : "DATA_NIEZNANA"}
         </span>
       </div>
     </Link>

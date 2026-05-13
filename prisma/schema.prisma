@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  // USUNIĘTO LINIĘ URL
+}
+
+model User {
+  id            String          @id @default(cuid())
+  email         String          @unique
+  password      String          // Hasło (zaszyfrowane!)
+  toWatch       MovieToWatch[]
+  watched       WatchedMovie[]
+}
+
+model MovieToWatch {
+  id          Int      @id // ID z TMDB
+  title       String
+  poster      String?
+  releaseDate String
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model WatchedMovie {
+  id          Int      @id // ID z TMDB
+  title       String
+  poster      String?
+  releaseDate String
+  rating      Int
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+}

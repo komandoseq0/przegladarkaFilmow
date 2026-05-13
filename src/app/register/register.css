@@ -1,0 +1,23 @@
+@import "../login/login.css";
+
+.register-page-container {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--bg-color);
+  padding: 2rem;
+}
+
+.terminal-error {
+  color: #ff4444;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  text-align: center;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
