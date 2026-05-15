@@ -65,92 +65,90 @@ export default function MovieDetails({
     };
   };
 
-  function addToWatch() {
-    let toWatch: number[] = JSON.parse(localStorage.getItem("toWatch") || "[]");
-    if (movie == null) return;
-    if (toWatch.includes(movie.id)) {
-      toWatch = toWatch.filter((movieId: number) => movieId !== movie.id);
-      setMovieCheckedToWatch(false);
-    } else {
-      toWatch.push(movie.id);
-      setMovieCheckedToWatch(true);
-    }
-    console.log(toWatch);
-    localStorage.setItem("toWatch", JSON.stringify(toWatch));
-  }
+  async function addToWatch() {
+    if (!movie) return;
 
-  function addWatched() {
-    let watched: watchedMovie[] = JSON.parse(
-      localStorage.getItem("watched") || "[]",
-    );
-    if (movie == null) return;
+    try {
+      const res = await fetch("/api/movies/toWatch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ movieId: movie.id }),
+      });
 
-    const isAlreadyWatched = watched.some(
-      (movieData: watchedMovie) => movie.id === movieData.id,
-    );
-
-    if (isAlreadyWatched) {
-      watched = watched.filter(
-        (movieData: watchedMovie) => movie.id !== movieData.id,
-      );
-      setMovieCheckedWatched(false);
-    } else {
-      watched.push({ id: movie.id, rating: 0 });
-      setMovieCheckedWatched(true);
-    }
-
-    localStorage.setItem("watched", JSON.stringify(watched));
-  }
-
-  useEffect(function () {
-    if (!movieId) return;
-
-    async function getLatestMovies() {
-      try {
-        const res = await fetch(
-          `https://api.themoviedb.org/3/movie/${movieId}?api_key=33f4be8d4411e3aecbc041d9a4dc486d&language=pl-Pl&append_to_response=credits`,
-        );
-
-        if (!res.ok)
-          throw new Error("Something went wrong with fetching latest movies");
-
+      if (res.ok) {
         const data = await res.json();
-        const cleanMovie = mapTMDBToApp(data);
-
-        console.log(cleanMovie);
-        setMovie(cleanMovie);
-      } catch (err: unknown) {
-        console.error(err);
+        setMovieCheckedToWatch(data.action === "added");
       }
+    } catch (err) {
+      console.error("Błąd komunikacji z bazą:", err);
     }
-    getLatestMovies();
-  }, [movieId]);
+  }
+
+  async function addWatched() {
+    if (!movie) return;
+
+    try {
+      const res = await fetch("/api/movies/toWatched", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ movieId: movie.id }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setMovieCheckedWatched(data.action === "added");
+      }
+    } catch (err) {
+      console.error("Błąd komunikacji z bazą:", err);
+    }
+  }
 
   useEffect(
     function () {
-      if (!movie) return;
+      if (!movieId) return;
 
-      const toWatch: number[] = JSON.parse(
-        localStorage.getItem("toWatch") || "[]",
-      );
-      if (toWatch.includes(movie.id)) {
-        setMovieCheckedToWatch(true);
+      async function getLatestMovies() {
+        try {
+          const res = await fetch(
+            `https://api.themoviedb.org/3/movie/${movieId}?api_key=33f4be8d4411e3aecbc041d9a4dc486d&language=pl-Pl&append_to_response=credits`,
+          );
+
+          if (!res.ok)
+            throw new Error("Something went wrong with fetching latest movies");
+
+          const data = await res.json();
+          const cleanMovie = mapTMDBToApp(data);
+
+          console.log(cleanMovie);
+          setMovie(cleanMovie);
+        } catch (err: unknown) {
+          console.error(err);
+        }
       }
-
-      const watched: watchedMovie[] = JSON.parse(
-        localStorage.getItem("watched") || "[]",
-      );
-
-      const isWatched = watched.some(
-        (movieData: watchedMovie) => movieData.id === movie.id,
-      );
-
-      if (isWatched) {
-        setMovieCheckedWatched(true);
-      }
+      getLatestMovies();
     },
-    [movie],
+    [movieId],
   );
+
+  useEffect(() => {
+    if (!movie) return;
+
+    async function checkMovieStatus() {
+      try {
+        const res = await fetch(`/api/movies/check?movieId=${movie?.id}`);
+
+        if (res.ok) {
+          const data = await res.json();
+          setMovieCheckedToWatch(data.isToWatch);
+          setMovieCheckedWatched(data.isWatched);
+        }
+      } catch (error) {
+        console.error("Błąd podczas sprawdzania statusu filmu:", error);
+      }
+    }
+
+    checkMovieStatus();
+  }, [movie]);
 
   return (
     <div className="movie-details-container">

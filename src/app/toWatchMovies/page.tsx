@@ -21,35 +21,51 @@ export default function ToWatchPage() {
     };
   };
 
-  function deleteMovie(movieId: number) {
-    const toWatch: number[] = JSON.parse(
-      localStorage.getItem("toWatch") || "[]",
+  async function deleteMovie(movieId: number) {
+    setToWatchMoviesData((prevData: number[]) => 
+      prevData.filter((id: number) => id !== movieId)
     );
 
-    const updatedToWatch = toWatch.filter((movie: number) => movie !== movieId);
-
-    localStorage.setItem("toWatch", JSON.stringify(updatedToWatch));
-
-    setToWatchMoviesData(updatedToWatch);
+    try {
+      await fetch("/api/movies/toWatch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ movieId }),
+      });
+    } catch (error) {
+      console.error("Błąd usuwania pliku z systemu:", error);
+    }
   }
 
-  function addToWatched(movieId: number) {
-    const toWatch: watchedMovie[] = JSON.parse(
-      localStorage.getItem("watched") || "[]",
-    );
+  async function addToWatched(movieId: number) {
+    try {
+      await fetch("/api/movies/watched", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ movieId }),
+      });
 
-    toWatch.push({id: movieId, rating: 0});
-
-    localStorage.setItem("watched", JSON.stringify(toWatch));
-
-    deleteMovie(movieId);
+      deleteMovie(movieId);
+      
+    } catch (error) {
+      console.error("Błąd przenoszenia pliku:", error);
+    }
   }
 
-  useEffect(function () {
-    const toWatch: number[] = JSON.parse(
-      localStorage.getItem("toWatch") || "[]",
-    );
-    setToWatchMoviesData(toWatch);
+  useEffect(() => {
+    async function fetchInitialData() {
+      try {
+        const res = await fetch("/api/movies/toWatch");
+        if (res.ok) {
+          const data = await res.json();
+          setToWatchMoviesData(data); 
+        }
+      } catch (error) {
+        console.error("Błąd pobierania bazy:", error);
+      }
+    }
+
+    fetchInitialData();
   }, []);
 
   useEffect(() => {

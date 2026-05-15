@@ -22,20 +22,20 @@ model User {
 }
 
 model MovieToWatch {
-  id          Int      @id // ID z TMDB
-  title       String
-  poster      String?
-  releaseDate String
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
+  id        String   @id @default(cuid()) // Unikalny identyfikator wpisu w bazie
+  movieId   Int      // Tutaj ląduje ID z TMDB
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([movieId, userId]) // To sprawia, że jeden użytkownik nie doda dwa razy tego samego filmu
 }
 
 model WatchedMovie {
-  id          Int      @id // ID z TMDB
-  title       String
-  poster      String?
-  releaseDate String
-  rating      Int
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
+  id        String   @id @default(cuid())
+  movieId   Int      // ID z TMDB
+  rating    Int      @default(0)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([movieId, userId])
 }

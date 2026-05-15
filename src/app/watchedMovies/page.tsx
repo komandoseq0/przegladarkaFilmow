@@ -2,15 +2,24 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { MovieTypesWatched, TMDBMovie, watchedMovie } from "../../types/movieData";
+import {
+  MovieTypesWatched,
+  TMDBMovie,
+  watchedMovie,
+} from "../../types/movieData";
 import "../../components/homeComponents/movieCards.css";
 import "../userLists.css";
 
 export default function WatchedPage() {
-  const [watchedMoviesData, setWatchedMoviesData] = useState<watchedMovie[]>([]);
+  const [watchedMoviesData, setWatchedMoviesData] = useState<watchedMovie[]>(
+    [],
+  );
   const [watchedMovies, setWatchedMovies] = useState<MovieTypesWatched[]>([]);
 
-  const tmdbDataToMovieData = (tmdbData: TMDBMovie, rating: number): MovieTypesWatched => {
+  const tmdbDataToMovieData = (
+    tmdbData: TMDBMovie,
+    rating: number,
+  ): MovieTypesWatched => {
     return {
       id: tmdbData.id,
       title: tmdbData.title,
@@ -18,45 +27,61 @@ export default function WatchedPage() {
       poster: tmdbData.poster_path
         ? `https://image.tmdb.org/t/p/w500${tmdbData.poster_path}`
         : null,
-      rating: rating
+      rating: rating,
     };
   };
 
-  function deleteMovie(movieId: number) {
-    const watched: watchedMovie[] = JSON.parse(
-      localStorage.getItem("watched") || "[]",
+  async function deleteMovie(movieId: number) {
+    setWatchedMoviesData((prevWatched: watchedMovie[]) =>
+      prevWatched.filter((movieData) => movieData.id !== movieId),
     );
 
-    const updatedToWatched = watched.filter(
-      (movieData: watchedMovie) => movieId !== movieData.id
-    );
-
-    localStorage.setItem("watched", JSON.stringify(updatedToWatched));
-
-    setWatchedMoviesData(updatedToWatched);
+    try {
+      await fetch("/api/movies/watched", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ movieId }),
+      });
+    } catch (error) {
+      console.error("Błąd podczas usuwania filmu:", error);
+    }
   }
 
-  function rateMovie(movieId: number, newRating: number) {
-    const watched: watchedMovie[] = JSON.parse(
-      localStorage.getItem("watched") || "[]",
+  async function rateMovie(movieId: number, newRating: number) {
+    setWatchedMoviesData((prevWatched: watchedMovie[]) =>
+      prevWatched.map((movieData) => {
+        if (movieData.id === movieId) {
+          return { ...movieData, rating: newRating };
+        }
+        return movieData;
+      }),
     );
 
-    const updatedToWatched = watched.map((movieData: watchedMovie) => {
-      if (movieData.id === movieId) {
-        return { ...movieData, rating: newRating };
+    try {
+      await fetch("/api/movies/watched", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ movieId, rating: newRating }),
+      });
+    } catch (error) {
+      console.error("Błąd podczas aktualizacji oceny:", error);
+    }
+  }
+
+  useEffect(() => {
+    async function fetchInitialData() {
+      try {
+        const res = await fetch("/api/movies/watched");
+        if (res.ok) {
+          const data = await res.json();
+          setWatchedMoviesData(data);
+        }
+      } catch (error) {
+        console.error("Błąd pobierania obejrzanych filmów:", error);
       }
-      return movieData;
-    });
+    }
 
-    localStorage.setItem("watched", JSON.stringify(updatedToWatched));
-    setWatchedMoviesData(updatedToWatched);
-  }
-
-  useEffect(function () {
-    const watched: watchedMovie[] = JSON.parse(
-      localStorage.getItem("watched") || "[]",
-    );
-    setWatchedMoviesData(watched);
+    fetchInitialData();
   }, []);
 
   useEffect(() => {
@@ -94,11 +119,11 @@ export default function WatchedPage() {
         {watchedMovies.length > 0 ? (
           <div className="movie-grid">
             {watchedMovies.map((movie) => (
-              <Movie 
-                movie={movie} 
-                key={movie.id} 
-                handleDelete={deleteMovie} 
-                handleRate={rateMovie} 
+              <Movie
+                movie={movie}
+                key={movie.id}
+                handleDelete={deleteMovie}
+                handleRate={rateMovie}
               />
             ))}
           </div>
@@ -112,14 +137,14 @@ export default function WatchedPage() {
   );
 }
 
-function Movie({ 
-  movie, 
-  handleDelete, 
-  handleRate 
-}: { 
-  movie: MovieTypesWatched, 
-  handleDelete: (movie: number) => void,
-  handleRate: (movie: number, rating: number) => void 
+function Movie({
+  movie,
+  handleDelete,
+  handleRate,
+}: {
+  movie: MovieTypesWatched;
+  handleDelete: (movie: number) => void;
+  handleRate: (movie: number, rating: number) => void;
 }) {
   return (
     <div key={movie.id} className="industrial-card list-card">
@@ -136,16 +161,27 @@ function Movie({
         </div>
       </Link>
       <div className="list-actions">
-        <StarRating 
-          rating={movie.rating} 
-          onRate={(newRating) => handleRate(movie.id, newRating)} 
+        <StarRating
+          rating={movie.rating}
+          onRate={(newRating) => handleRate(movie.id, newRating)}
         />
-        <button className="industrial-btn danger" onClick={() => handleDelete(movie.id)}>✗</button>
+        <button
+          className="industrial-btn danger"
+          onClick={() => handleDelete(movie.id)}
+        >
+          ✗
+        </button>
       </div>
     </div>
   );
 }
-function StarRating({ rating, onRate }: { rating: number, onRate: (r: number) => void }) {
+function StarRating({
+  rating,
+  onRate,
+}: {
+  rating: number;
+  onRate: (r: number) => void;
+}) {
   const [hover, setHover] = useState<number | null>(null);
 
   return (
