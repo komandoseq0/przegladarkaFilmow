@@ -52,7 +52,7 @@ export default function MostPopularMovies() {
 
 function Movie({ movie } : {movie: MovieTypes}) {
     return (
-      <Link href={`/movie/${movie.id}`}>
+      <Link href={`/movie/${movie.id}`} aria-label={`Przejdź do filmu ${movie.title}`}>
           <div className="industrial-card">
               <div className="card-image-wrapper">
                 {movie.poster ? (

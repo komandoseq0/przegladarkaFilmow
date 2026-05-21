@@ -5,7 +5,6 @@ import {
   MovieDetailsApp,
   TMDBMovieDetails,
   CastMember,
-  watchedMovie,
 } from "../../../types/movieData";
 import "../movieDetails.css";
 
@@ -18,10 +17,10 @@ export default function MovieDetails({
   const movieId = resolvedParams.id;
 
   const [movie, setMovie] = useState<MovieDetailsApp>();
-  const [movieCheckedToWatch, setMovieCheckedToWatch] =
-    useState<boolean>(false);
-  const [movieCheckedWatched, setMovieCheckedWatched] =
-    useState<boolean>(false);
+  const [movieCheckedToWatch, setMovieCheckedToWatch] = useState<boolean>(false);
+  const [movieCheckedWatched, setMovieCheckedWatched] = useState<boolean>(false);
+  
+  const [showAuthPopup, setShowAuthPopup] = useState<boolean>(false);
 
   const mapTMDBToApp = (tmdb: TMDBMovieDetails): MovieDetailsApp => {
     const director =
@@ -75,6 +74,11 @@ export default function MovieDetails({
         body: JSON.stringify({ movieId: movie.id }),
       });
 
+      if (res.status === 401 || res.status === 403) {
+        setShowAuthPopup(true);
+        return;
+      }
+
       if (res.ok) {
         const data = await res.json();
         setMovieCheckedToWatch(data.action === "added");
@@ -93,6 +97,11 @@ export default function MovieDetails({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ movieId: movie.id }),
       });
+
+      if (res.status === 401 || res.status === 403) {
+        setShowAuthPopup(true);
+        return;
+      }
 
       if (res.ok) {
         const data = await res.json();
@@ -119,7 +128,6 @@ export default function MovieDetails({
           const data = await res.json();
           const cleanMovie = mapTMDBToApp(data);
 
-          console.log(cleanMovie);
           setMovie(cleanMovie);
         } catch (err: unknown) {
           console.error(err);
@@ -136,6 +144,8 @@ export default function MovieDetails({
     async function checkMovieStatus() {
       try {
         const res = await fetch(`/api/movies/check?movieId=${movie?.id}`);
+        
+        if (res.status === 401) return;
 
         if (res.ok) {
           const data = await res.json();
@@ -233,6 +243,22 @@ export default function MovieDetails({
           </div>
         </aside>
       </div>
+
+      {showAuthPopup && (
+        <div className="auth-popup-overlay" onClick={() => setShowAuthPopup(false)}>
+          <div className="auth-popup-content data-block" onClick={(e) => e.stopPropagation()}>
+            <h2 className="block-title">BRAK DOSTĘPU</h2>
+            <p className="overview" style={{ marginBottom: "1.5rem" }}>
+              Musisz być zalogowany, aby móc dodawać filmy do swojej listy.
+            </p>
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <button className="btn-industrial primary" onClick={() => setShowAuthPopup(false)}>
+                ZROZUMIANO
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
