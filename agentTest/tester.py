@@ -21,7 +21,11 @@ async def main():
     4. Pojawi się okienko o braku dostępu. Kliknij przycisk "ZROZUMIANO", aby je zamknąć.
     5. Po zamknięciu okienka, kliknij w górnym menu przycisk "[ ZALOGUJ ]".
     6. Na stronie logowania wpisz dowolny email i hasło w pola formularza, a następnie kliknij "Zaloguj".
-    7. Zakończ test i napisz raport.
+    7. GŁÓWNA ZASADA ZAKOŃCZENIA: Kiedy wykonasz wszystkie powyższe kroki, MUSISZ użyć akcji 'done', aby natychmiast zakończyć pracę i zapobiec powtarzaniu kroków! 
+    W parametrze tej akcji napisz profesjonalny, czytelny raport z testu w formacie Markdown. Raport ma zawierać:
+       - Krótkie podsumowanie wykonanych kroków.
+       - Obserwację końcową (np. czy po wpisaniu zmyślonych danych aplikacja poprawnie pokazała błąd).
+       - Ostateczny werdykt (np. "TEST ZALICZONY").
     """
 
     agent = Agent(
@@ -41,8 +45,16 @@ async def main():
     print("Uruchamiam agenta Gemini... (Otworzy się okno przeglądarki)")
     result = await agent.run()
     
-    print("\n--- RAPORT Z TESTU ---")
-    print(result)
+    print("\n=========================================")
+    print("           RAPORT Z TESTU                ")
+    print("=========================================\n")
+    
+    final_report = result.final_result()
+    
+    if final_report:
+        print(final_report)
+    else:
+        print("Agent zakończył pracę, ale nie wygenerował poprawnego raportu tekstowego.")
 
 if __name__ == "__main__":
     asyncio.run(main())
