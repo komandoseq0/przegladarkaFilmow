@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# przegladarkaFilmow
 
-## Getting Started
+A personal movie browsing application built with Next.js. It pulls data from [The Movie Database (TMDB)](https://www.themoviedb.org/) API and lets you keep track of what you want to watch and what you've already seen.
 
-First, run the development server:
+## What it does
+
+The home page shows three curated lists fetched directly from TMDB: best rated movies, most popular right now, and the latest releases. Clicking any title opens a detail page with the full overview, runtime, genres, director, top cast, and the TMDB community rating.
+
+If you create an account, you can add movies to a personal watchlist or mark them as watched. Both lists are available as separate pages so you can manage them easily. Adding a movie you've already marked as "to watch" will move it over to your watched list.
+
+## Tech stack
+
+- **Next.js 16** with the App Router and React 19
+- **TypeScript** throughout
+- **NextAuth** for session-based authentication
+- **Prisma** with a SQLite database for storing user data and movie lists
+- **Tailwind CSS** for styling
+- **bcrypt** for password hashing
+
+## Getting started
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Set up the database:
+
+```bash
+npx prisma migrate dev
+```
+
+You'll need a TMDB API key. The app currently reads it directly in the fetch calls — swap in your own key or move it to an environment variable.
+
+Create a `.env` file at the project root and add at minimum:
+
+```
+DATABASE_URL="file:./prisma/dev.db"
+NEXTAUTH_SECRET="your-secret-here"
+NEXTAUTH_URL="http://localhost:3000"
+```
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+  app/
+    page.tsx              # Home page (movie lists)
+    movie/[id]/           # Movie detail page
+    login/                # Login page
+    register/             # Registration page
+    watchedMovies/        # Your watched movies list
+    toWatchMovies/        # Your watchlist
+    api/                  # API routes (auth, movie lists)
+  components/             # Shared UI components
+  types/                  # TypeScript type definitions
+  lib/                    # Prisma client setup
+prisma/
+  schema.prisma           # Database schema
+```
 
-## Learn More
+## Notes
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Movie data is fetched client-side from the TMDB API in Polish (`pl-PL` locale).
+- The database stores only TMDB movie IDs linked to user accounts — no movie metadata is duplicated locally.
+- Passwords are hashed with bcrypt before being stored.
